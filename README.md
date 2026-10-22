@@ -61,3 +61,45 @@ reduce contention when many threads increment concurrently.
 Synchronizing only increment() does not coordinate an unsynchronized
 get() through the same monitor. Synchronizing both methods provides
 the corresponding synchronization and visibility guarantees.
+
+
+
+## Task 3 — Producer–Consumer
+
+### Configuration
+
+- Producers: 2
+- Consumers: 3
+- Total orders: 100
+- Buffer capacity: 5
+
+### Implementation 1: BoundedBuffer
+
+Implemented a bounded buffer using ArrayDeque, synchronized
+methods, wait(), and notifyAll().
+
+A producer waits while the buffer is full. A consumer waits
+while the buffer is empty. The conditions are checked using
+while loops to ensure they are re-evaluated after waking up.
+
+Poison pills with order ID -1 signal the consumers to stop.
+
+### Implementation 2: ArrayBlockingQueue
+
+Implemented the same OrderQueue interface using Java's
+ArrayBlockingQueue. The built-in queue handles waiting and
+coordination when full or empty.
+
+### Verification
+
+Both implementations completed successfully:
+- 100 orders produced
+- 100 orders processed
+- 3 consumers stopped
+
+### Comparison
+
+BoundedBuffer demonstrates how synchronization and condition
+waiting can be implemented manually. ArrayBlockingQueue provides
+a ready-made, thread-safe bounded queue with the coordination
+logic handled internally.
