@@ -103,3 +103,30 @@ BoundedBuffer demonstrates how synchronization and condition
 waiting can be implemented manually. ArrayBlockingQueue provides
 a ready-made, thread-safe bounded queue with the coordination
 logic handled internally.
+
+
+
+## Task 4 — Thread Pools, Futures and Virtual Threads
+
+### Part 1: Prime Counting
+- Counted primes below 4,000,000 sequentially and in parallel.
+- Split the range into 16 chunks.
+- Used Callable, ExecutorService and Future.
+- Both approaches returned 283,146 primes.
+
+### Part 2: Simulated Downloads
+- Submitted 500 download tasks.
+- Compared a fixed pool of 20 platform threads with virtual threads.
+- Handled 10 IOException failures without crashing.
+- Tested a 1-second timeout and cancelled the slow task.
+
+### Part 3: CompletableFuture Bonus
+- Used supplyAsync() to execute downloads asynchronously.
+- Used allOf() to wait for all tasks.
+- Used handle() to convert failed tasks into fallback strings.
+- Verified 490 successful and 10 failed downloads.
+
+### Key Findings
+Virtual threads performed well for the simulated I/O-bound workload.
+CompletableFuture provided another way to compose asynchronous
+tasks and handle errors. Execution times depend on the machine.
