@@ -130,3 +130,53 @@ logic handled internally.
 Virtual threads performed well for the simulated I/O-bound workload.
 CompletableFuture provided another way to compose asynchronous
 tasks and handle errors. Execution times depend on the machine.
+
+
+## Task 5 — Deadlock and Graceful Shutdown
+
+### 1. Reproducing the Deadlock
+Implemented a deliberately broken Bank using nested synchronized
+blocks. Opposing lock acquisition orders caused a deadlock.
+
+Used jps and jstack from JDK 21 to identify the Java process
+and capture the real deadlock report in deadlock.txt.
+
+### 2. Deadlock Watchdog
+Implemented DeadlockWatchdog using ThreadMXBean.findDeadlockedThreads()
+to detect and print the names of deadlocked threads.
+
+### 3. Fix A: OrderedBank
+Acquired account locks in ascending account ID order to prevent
+circular waiting.
+
+Test result:
+- Transfers: 800,000
+- Total balance: 4,000
+- Elapsed time: 117 ms
+
+### 4. Fix B: TryLockBank
+Used ReentrantLock.tryLock() with a 10 ms timeout. If lock
+acquisition failed, released any acquired lock and retried
+after a random back-off.
+
+Test result:
+- Transfers: 800,000
+- Retries: 262
+- Total balance: 4,000
+- Elapsed time: 813 ms
+
+### 5. Graceful Shutdown
+Started eight transfer workers and interrupted them after
+two seconds. Each worker checked its interrupt status and
+restored the interrupt flag when InterruptedException occurred.
+
+Test result:
+- Completed transfers: 936,542
+- All workers stopped: true
+- Final total balance: 4,000
+
+### Conclusion
+Consistent lock ordering prevents circular waiting.
+Timed lock acquisition with retries provides another way
+to avoid indefinite lock waiting. Cooperative interruption
+allows workers to stop while preserving the account balance.
